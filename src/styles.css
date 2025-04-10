@@ -27,11 +27,19 @@ body {
 
 form {
   display: flex;
-
-  width: 50%;
+  width: 30%;
+  height: auto;
   flex-direction: column;
+  margin: 10% auto;
   padding: 25px;
   gap: 15px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 1), rgba(40, 40, 40, 1));
+}
+
+h2,
+h3,
+label {
+  color: rgba(245, 240, 230, 0.9);
 }
 
 label {
@@ -40,5 +48,25 @@ label {
 }
 
 input {
+  appearance: none;
   min-width: 100%;
+  padding: 5px;
+}
+
+#error {
+  width: 100%;
+  height: auto;
+}
+
+#error.active {
+  padding: 3px;
+  background-color: rgb(165, 55, 55);
+  color: rgb(255, 255, 255);
+}
+
+button {
+  width: 20%;
+  padding: 5px;
+  margin: 15px auto;
+  cursor: pointer;
 }
