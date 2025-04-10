@@ -1,4 +1,5 @@
 import em from 'element-maker';
+import rv from './validator.js';
 
 function FormController() {
   const body = document.querySelector('body');
@@ -6,25 +7,27 @@ function FormController() {
     id: 'form',
     attributes: { novalidate: true, action: '/', method: 'GET' },
   });
+  const formHeadline = em('h2', { textContent: 'Shopping Form' });
   const emailLabel = em('label', {
     textContent: 'Email',
+    id: 'email-label',
     attributes: { for: 'email' },
   });
   const emailInput = em('input', {
     id: 'email',
-    attributes: { type: 'email', id: 'email', name: 'email', required: true },
+    attributes: { type: 'email', name: 'email', required: true },
   });
   emailLabel.appendChild(emailInput);
 
   const countryLabel = em('label', {
     textContent: 'Country',
+    id: 'country-label',
     attributes: { for: 'country' },
   });
   const countryInput = em('input', {
     id: 'country',
     attributes: {
       type: 'text',
-      id: 'country',
       name: 'country',
       minlength: 3,
       maxlength: 30,
@@ -35,12 +38,14 @@ function FormController() {
 
   const postalCodeLabel = em('label', {
     textContent: 'Postal Code',
+    id: 'postal-code-label',
     attributes: { for: 'postal-code' },
   });
   const postalCodeInput = em('input', {
     id: 'postal-code',
     attributes: {
       type: 'text',
+      maxlength: 5,
       pattern: '/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5}$/g',
       required: true,
     },
@@ -49,14 +54,14 @@ function FormController() {
 
   const passwordLabel = em('label', {
     textContent: 'Password',
+    id: 'password-label',
     attributes: { for: 'password' },
   });
   const passwordInput = em('input', {
     id: 'password',
     attributes: {
-      type: 'password',
-      id: 'password',
       name: 'password',
+      type: 'password',
       minlength: 6,
       maxlength: 16,
       required: true,
@@ -67,13 +72,13 @@ function FormController() {
 
   const passwordConfirmationLabel = em('label', {
     textContent: 'Confirm Password',
+    id: 'password-confirmation-label',
     attributes: { for: 'password-confirmation' },
   });
   const passwordConfirmationInput = em('input', {
-    id: 'password',
+    id: 'password-confirmation',
     attributes: {
       type: 'password',
-      id: 'password-confirmation',
       name: 'password-confirmation',
       minlength: 6,
       maxlength: 16,
@@ -87,38 +92,54 @@ function FormController() {
     textContent: 'Submit',
     attributes: { type: 'submit' },
   });
+
+  const errorDiv = em('div', {
+    id: 'error',
+    textContent: '',
+  });
+  form.appendChild(formHeadline);
   form.appendChild(emailLabel);
   form.appendChild(countryLabel);
   form.appendChild(postalCodeLabel);
   form.appendChild(passwordLabel);
   form.appendChild(passwordConfirmationLabel);
   form.appendChild(submitBtn);
-
+  form.appendChild(errorDiv);
   body.appendChild(form);
 
   return form;
 }
 
-export default { FormController };
+function FormListener() {
+  function kebabToCamel(str) {
+    return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+  }
+  const form = document.querySelector('#form');
+  const submitBtn = document.querySelector('#submit');
+
+  form.addEventListener('input', (e) => {
+    if (e.target.closest('input')) {
+      const convertedId = kebabToCamel(e.target.id);
+      rv()[convertedId]();
+    }
+  });
+  form.addEventListener('blur', (e) => {
+    if (e.target.closest('input')) {
+      const convertedId = kebabToCamel(e.target.id);
+      rv()[convertedId]();
+    }
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (rv().all() === true) {
+      alert('high five!');
+    } else {
+      e.preventDefault();
+    }
+  });
+}
+
+export { FormController, FormListener };
 // I need a form constructor
 // Form got to have novalidate attribute
 // Email, Country, Postal Code, Password, Password Confirmation, Submit button (type submit)
-// Email: type mismatch, required (valueMissing)
-// Country: minlength 3 maxlength 30 (tooShort, tooLong), required (valueMissing)
-// Postal Code: maxlength 5 (tooShort, tooLong), required (valueMissing)
-// Password: minlength 6 maxlength 10 (tooShort, tooLong), required (valueMissing), regex pattern /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,16}$/g (patternMismatch)
-// Password Confirmation: Check strictly equal with password value (manually), required (valueMissing)
-// Function to handle the validation for each field, which means i need to build 5 functions
-// Structure example runValidator().email(), runValidator().country() etc
-// Validators have to stylize the relevant elements
-// Run setCustomValidity right after validator
-// Custom validity message should be set at runValidator() level, so the children can use it instead of reinit every time
-// If valid, remove error message and add valid styling
-// Each focusin event should start with errormsg div removal
-// Focusout event should only run validator
-// I need event listener for the validations, should be live inline validation
-// (highlighting a field red and providing a helpful error message until it has been filled in properly.)
-// eventlistener should catch the input type, then use it during function call eg runValidator.${type}()
-// don't forget e.preventDefault, also :valid and :invalid pseudoclasses
-// submit button should run all validators one by one, and prevent submission
-// show alert(high five) upon successful submission
