@@ -1,4 +1,5 @@
 import './styles.css';
-import fc from './form.js';
+import * as fc from './form.js';
 
-const form = fc.FormController();
+fc.FormController();
+fc.FormListener();
