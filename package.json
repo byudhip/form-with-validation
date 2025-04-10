@@ -1,7 +1,7 @@
 {
-  "name": "template",
+  "name": "form-with-validation",
   "version": "1.0.0",
-  "description": "to be used as template for future projects",
+  "description": "Form with Constraint Validation API usage",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,18 +14,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/byudhip/template.git"
+    "url": "git+https://github.com/byudhip/form-with-validation.git"
   },
   "keywords": [],
   "author": "Yudhi Pratama",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/byudhip/template/issues"
+    "url": "https://github.com/byudhip/form-with-validation/issues"
   },
-  "homepage": "https://github.com/byudhip/template#readme",
+  "homepage": "https://github.com/byudhip/form-with-validation#readme",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "css-loader": "^7.1.2",
+    "element-maker": "^1.0.1",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-import": "^2.31.0",
