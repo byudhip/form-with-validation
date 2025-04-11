@@ -7,7 +7,7 @@ function FormController() {
     id: 'form',
     attributes: { novalidate: true, action: '/', method: 'GET' },
   });
-  const formHeadline = em('h2', { textContent: 'Shopping Form' });
+  const formHeadline = em('h2', { textContent: 'Shipping Form' });
   const emailLabel = em('label', {
     textContent: 'Email',
     id: 'email-label',
@@ -15,7 +15,11 @@ function FormController() {
   });
   const emailInput = em('input', {
     id: 'email',
-    attributes: { type: 'email', name: 'email', required: true },
+    attributes: {
+      type: 'email',
+      name: 'email',
+      required: true,
+    },
   });
   emailLabel.appendChild(emailInput);
 
@@ -80,7 +84,8 @@ function FormController() {
     attributes: {
       type: 'password',
       name: 'password-confirmation',
-      minlength: 6,
+      pattern: '/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,16}$/',
+      minlength: 8,
       maxlength: 16,
       required: true,
     },
@@ -93,10 +98,6 @@ function FormController() {
     attributes: { type: 'submit' },
   });
 
-  const errorDiv = em('div', {
-    id: 'error',
-    textContent: '',
-  });
   form.appendChild(formHeadline);
   form.appendChild(emailLabel);
   form.appendChild(countryLabel);
@@ -104,8 +105,22 @@ function FormController() {
   form.appendChild(passwordLabel);
   form.appendChild(passwordConfirmationLabel);
   form.appendChild(submitBtn);
-  form.appendChild(errorDiv);
   body.appendChild(form);
+
+  const labels = [...document.querySelectorAll('label')];
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i];
+    const baseName = label.getAttribute('for') || `field-${i}`;
+
+    const errorDiv = em('div', {
+      classNames: [`error`, `${baseName}`],
+      textContent: '',
+      attributes: {
+        hidden: true,
+      },
+    });
+    labels[i].appendChild(errorDiv);
+  }
 
   return form;
 }
@@ -115,7 +130,6 @@ function FormListener() {
     return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
   }
   const form = document.querySelector('#form');
-  const submitBtn = document.querySelector('#submit');
 
   form.addEventListener('input', (e) => {
     if (e.target.closest('input')) {
@@ -123,16 +137,15 @@ function FormListener() {
       rv()[convertedId]();
     }
   });
-  form.addEventListener('blur', (e) => {
-    if (e.target.closest('input')) {
-      const convertedId = kebabToCamel(e.target.id);
-      rv()[convertedId]();
-    }
-  });
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (rv().all() === true) {
+    if (rv().allValid() === true) {
       alert('high five!');
+      const inputs = [...document.querySelectorAll('.valid')];
+      for (let input of inputs) {
+        input.value = '';
+        input.classList.remove('valid');
+      }
     } else {
       e.preventDefault();
     }
@@ -140,6 +153,3 @@ function FormListener() {
 }
 
 export { FormController, FormListener };
-// I need a form constructor
-// Form got to have novalidate attribute
-// Email, Country, Postal Code, Password, Password Confirmation, Submit button (type submit)
