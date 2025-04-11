@@ -28,7 +28,7 @@ body {
 form {
   display: flex;
   width: 30%;
-  height: auto;
+  height: fit-content;
   flex-direction: column;
   margin: 10% auto;
   padding: 25px;
@@ -49,19 +49,27 @@ label {
 
 input {
   appearance: none;
+  outline: none;
   min-width: 100%;
   padding: 5px;
 }
 
-#error {
+.error {
   width: 100%;
   height: auto;
 }
 
-#error.active {
+.error.active {
   padding: 3px;
   background-color: rgb(165, 55, 55);
   color: rgb(255, 255, 255);
+}
+.invalid {
+  box-shadow: 0px 0px 8px 3px #ff4d4d;
+}
+
+.valid {
+  box-shadow: 0px 0px 8px 3px #00ff80;
 }
 
 button {
