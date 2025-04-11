@@ -1,5 +1,3 @@
-import ic from 'input-cleaner';
-
 function RunValidator() {
   const emailLabel = document.querySelector('#email-label');
   const emailInput = document.querySelector('#email');
@@ -9,7 +7,7 @@ function RunValidator() {
   const postalCodeInput = document.querySelector('#postal-code');
   const passwordLabel = document.querySelector('#password-label');
   const passwordInput = document.querySelector('#password');
-  const passwordconfirmationLabel = document.querySelector(
+  const passwordConfirmationLabel = document.querySelector(
     '#password-confirmation-label'
   );
   const passwordConfirmationInput = document.querySelector(
@@ -20,111 +18,150 @@ function RunValidator() {
   const countryMessage = 'Country name must be between 3-30 characters';
   const postalCodeMessage = 'Postal code must be 5 characters';
   const passwordMessage =
-    'Password must be 6-16 characters, contains 1 uppercase & lowercase letters, a symbol, and a number';
+    'Password must contains 8-16 characters, with 1 uppercase & lowercase letters, a symbol, and a number';
   const passwordConfirmationMessage = 'Please re-enter your password';
-  const errorDiv = document.querySelector('#error');
+  const errorDivs = [...document.querySelectorAll('.error')];
   const submitBtn = document.querySelector('#submit');
   function email() {
-    const cleanedEmail = ic(emailInput.value).escaped;
-    emailInput.value = cleanedEmail;
+    emailInput.classList.remove('valid');
+    emailInput.classList.remove('invalid');
+    const errorEmail = errorDivs.find((element) =>
+      element.classList.contains('email')
+    );
+    emailInput.setCustomValidity('');
     emailInput.checkValidity();
-    if (emailInput.validity.typeMismatch) {
-      emailLabel.appendChild(errorDiv);
+    if (emailInput.validity.typeMismatch || emailInput.validity.valueMissing) {
       emailInput.setCustomValidity(emailMessage);
       emailInput.classList.add('invalid');
-      errorDiv.removeAttribute('hidden');
-      errorDiv.className = 'active';
-      errorDiv.textContent = emailMessage;
+      errorEmail.classList.add('active');
+      errorEmail.textContent = emailMessage;
+      errorEmail.hidden = false;
       return false;
-    } else {
-      emailInput.setCustomValidity('');
-      emailInput.classList.remove('invalid');
+    } else if (emailInput.validity.valid) {
       emailInput.classList.add('valid');
-      errorDiv.textContent = '';
-      errorDiv.classList.remove('active');
-      errorDiv.setAttribute('hidden', true);
+      errorEmail.textContent = '';
+      errorEmail.classList.remove('active');
+      errorEmail.hidden = true;
       return true;
     }
   }
   function country() {
-    const cleanedCountry = ic(countryInput.value).escaped;
-    countryInput.value = cleanedCountry;
-    countryInput.checkValidity();
-    if (countryInput.validity.tooShort || countryInput.validity.tooLong) {
-      countryLabel.appendChild(errorDiv);
+    countryInput.classList.remove('invalid');
+    countryInput.classList.remove('valid');
+    countryInput.setCustomValidity('');
+    const errorCountry = errorDivs.find((element) =>
+      element.classList.contains('country')
+    );
+    if (countryInput.value.length < 3) {
       countryInput.setCustomValidity(countryMessage);
       countryInput.classList.add('invalid');
-      errorDiv.removeAttribute('hidden');
-      errorDiv.className = 'active';
-      errorDiv.textContent = countryMessage;
+      errorCountry.hidden = false;
+      errorCountry.classList.add('active');
+      errorCountry.textContent = countryMessage;
       return false;
-    } else if (countryInput.validity.valid) {
-      countryInput.setCustomValidity('');
-      countryInput.classList.remove('invalid');
+    } else {
       countryInput.classList.add('valid');
-      errorDiv.textContent = '';
-      errorDiv.classList.remove('active');
-      errorDiv.setAttribute('hidden', true);
+      errorCountry.textContent = '';
+      errorCountry.classList.remove('active');
+      errorCountry.hidden = true;
       return true;
     }
   }
   function postalCode() {
-    const cleanedPostalCode = ic(postalCodeInput.value).escaped;
-    postalCodeInput.value = cleanedPostalCode;
-    if (postalCodeInput.validity.tooShort || postalCodeInput.validity.tooLong) {
+    postalCodeInput.classList.remove('invalid');
+    postalCodeInput.classList.remove('valid');
+    postalCodeInput.setCustomValidity('');
+    const errorPostalCode = errorDivs.find((element) =>
+      element.classList.contains('postal-code')
+    );
+    postalCodeInput.checkValidity();
+    if (postalCodeInput.value.length < 5) {
       postalCodeInput.setCustomValidity(postalCodeMessage);
       postalCodeInput.classList.add('invalid');
+      errorPostalCode.hidden = false;
+      errorPostalCode.classList.add('active');
+      errorPostalCode.textContent = postalCodeMessage;
       return false;
-    } else if (postalCodeInput.validity.valid) {
-      postalCodeInput.setCustomValidity('');
-      postalCodeInput.classList.remove('invalid');
+    } else {
       postalCodeInput.classList.add('valid');
+      errorPostalCode.textContent = '';
+      errorPostalCode.classList.remove('active');
+      errorPostalCode.hidden = true;
+      return true;
     }
   }
 
   function password() {
-    const cleanedPassword = ic(passwordInput.value).escaped;
-    passwordInput.value = cleanedPassword;
+    passwordInput.classList.remove('invalid');
+    passwordInput.classList.remove('valid');
+    passwordInput.setCustomValidity('');
+    const errorPassword = errorDivs.find((element) =>
+      element.classList.contains('password')
+    );
+    console.log('password is ', passwordInput.value);
+    passwordInput.checkValidity();
     if (
-      passwordInput.validity.tooShort ||
-      passwordInput.validity.tooLong ||
-      passwordInput.validity.patternMismatch
+      (passwordInput.value.length < 8 &&
+        passwordInput.validity.patternMismatch) ||
+      passwordInput.validity.valueMissing
     ) {
+      console.log(passwordInput.validity);
       passwordInput.setCustomValidity(passwordMessage);
       passwordInput.classList.add('invalid');
-      return false;
-    } else if (passwordInput.validity.valid) {
-      passwordInput.setCustomValidity('');
-      passwordInput.classList.remove('invalid');
+      errorPassword.hidden = false;
+      errorPassword.classList.add('active');
+      errorPassword.textContent = passwordMessage;
+    } else {
+      console.log('password valid');
       passwordInput.classList.add('valid');
-      return true;
+      errorPassword.textContent = '';
+      errorPassword.classList.remove('active');
+      errorPassword.hidden = true;
     }
+    passwordConfirmation();
   }
 
   function passwordConfirmation() {
-    const cleanedPassword = ic(passwordInput.value).escaped;
-    const cleanedPasswordConfirmation = ic(
-      passwordConfirmationInput.value
-    ).escaped;
-    passwordConfirmationInput.value = cleanedPasswordConfirmation;
-    if (cleanedPassword !== cleanedPasswordConfirmation) {
+    passwordConfirmationInput.classList.remove('invalid');
+    passwordConfirmationInput.classList.remove('valid');
+    passwordConfirmationInput.setCustomValidity('');
+    const errorPasswordConfirmation = errorDivs.find((element) =>
+      element.classList.contains('password-confirmation')
+    );
+    const password = passwordInput.value;
+    const pwdConfInputVal = passwordConfirmationInput.value;
+    passwordConfirmationInput.checkValidity();
+    if (
+      pwdConfInputVal === '' ||
+      password === '' ||
+      (passwordInput.validity.patternMismatch && password !== pwdConfInputVal)
+    ) {
       passwordConfirmationInput.setCustomValidity(passwordConfirmationMessage);
       passwordConfirmationInput.classList.add('invalid');
-      return false;
-    } else if (cleanedPassword === cleanedPasswordConfirmation) {
-      passwordConfirmationInput.setCustomValidity('');
-      passwordConfirmationInput.classList.remove('invalid');
+      errorPasswordConfirmation.hidden = false;
+      errorPasswordConfirmation.classList.add('active');
+      errorPasswordConfirmation.textContent = passwordConfirmationMessage;
+    } else {
       passwordConfirmationInput.classList.add('valid');
+      errorPasswordConfirmation.textContent = '';
+      errorPasswordConfirmation.classList.remove('active');
+      errorPasswordConfirmation.hidden = true;
       return true;
     }
   }
 
-  function all() {
-    return [email, country, postalCode, password, passwordConfirmation].every(
-      (fn) => fn()
-    );
+  function allValid() {
+    const inputs = [...document.querySelectorAll('.valid')];
+    return inputs.length === 5 ? true : false;
   }
-  return { email, country, postalCode, password, passwordConfirmation, all };
+  return {
+    email,
+    country,
+    postalCode,
+    password,
+    passwordConfirmation,
+    allValid,
+  };
 }
 
 export default RunValidator;
